@@ -28,9 +28,14 @@ def load_vectorizer():
     return vectorizer
 
 def predict(loaded_model, vectorizer, string):
-    #how to use model to predict
-    prediction = loaded_model.predict(vectorizer.transform([string]))[0]
-    return prediction
+    #check if string is valid
+    if type(string) == str:
+        #how to use model to predict
+        prediction = loaded_model.predict(vectorizer.transform([string]))[0]
+        #check if outout is valid
+        if prediction == "REAL" or prediction == "FAKE":
+            return prediction
+    return "INVALID"
 
 model = load_model()
 vectorizer = load_vectorizer()
