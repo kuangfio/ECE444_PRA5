@@ -42,8 +42,7 @@ def get_predictions(client, headlines):
             predictions.append(prediction)
     return predictions
 
-def call_server():
-    query_string = "This+is+fake+news"
+def call_server(query_string):
     server="test-serve-sent-env-2.eba-gv6kmnuj.us-east-1.elasticbeanstalk.com"
     url = f"http://{server}/?query={query_string}"
     with urlopen(url) as response:
@@ -54,12 +53,27 @@ def call_server():
     
 
 def test_single_latency(benchmark):
-    result = benchmark(call_server)
+    result = benchmark(call_server,"This+is+fake+news")
 
     assert result != None
 
-def test_many_latency(benchmark):
-    benchmark.pedantic(call_server, rounds=100, iterations=1)
+def test_many_latency_fake(benchmark):
+    benchmark.pedantic(call_server, args=["This+is+fake+news"], rounds=100, iterations=1)
+
+    assert 1
+
+def test_many_latency_true(benchmark):
+    benchmark.pedantic(call_server, args=["This+is+real+news"], rounds=100, iterations=1)
+
+    assert 1
+
+def test_many_latency_fake_two(benchmark):
+    benchmark.pedantic(call_server, args=["BREAKING+NEWS"], rounds=100, iterations=1)
+
+    assert 1
+
+def test_many_latency_true_two(benchmark):
+    benchmark.pedantic(call_server, args=["Local+library+event"], rounds=100, iterations=1)
 
     assert 1
 
